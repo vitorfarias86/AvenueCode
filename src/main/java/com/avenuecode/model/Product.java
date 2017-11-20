@@ -7,12 +7,15 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Table(name = "PRODUCT")
@@ -30,15 +33,16 @@ public class Product implements Serializable {
 
 	@Column(name = "DESCRIPTION")
 	private String description;
-
+	
+	@Autowired
 	@ManyToOne(cascade={CascadeType.ALL})
 	@JoinColumn(name = "FATHER_ID")
 	private Product product;
 	
-	@OneToMany(mappedBy="product")
+	@OneToMany(mappedBy="product", fetch=FetchType.LAZY)
 	private Set<Product> childProducts = new HashSet<>();
 	
-	@OneToMany(mappedBy="prod")
+	@OneToMany(mappedBy="prod", fetch=FetchType.LAZY)
 	private Set<Image> childImages = new HashSet<>();
 	
 	public Product() {
@@ -78,6 +82,20 @@ public class Product implements Serializable {
 		this.product = product;	
 	}
 
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public Set<Image> getChildImages() {
+		return childImages;
+	}
+	public void setChildImages(Set<Image> childImages) {
+		this.childImages = childImages;
+	}
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -104,4 +122,5 @@ public class Product implements Serializable {
 		return String.format("Product [id=%s, name=%s, description=%s, product=%s, childProducts=%s, childImages=%s]",
 				id, name, description, product, childProducts, childImages);
 	}
+	
 }

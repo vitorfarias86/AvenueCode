@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +30,7 @@ public class ImageController {
 		return new ResponseEntity<List<Image>>(images, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/image/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/image/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Image> getImage(@PathVariable("id") long id) {
 		Image  image = service.findById(id);
         if (image == null) {
