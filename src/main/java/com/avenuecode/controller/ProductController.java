@@ -30,35 +30,62 @@ public class ProductController {
 		}
 		return new ResponseEntity<List<Product>>(products, HttpStatus.OK);
 	}
-	
+
+	@RequestMapping(value = "/product-with-relation/", method = RequestMethod.GET)
+	public ResponseEntity<List<Product>> listAllProductsWithRelationship() {
+		List<Product> products = service.findAllWithRelationship();
+		if (products.isEmpty()) {
+			return new ResponseEntity<List<Product>>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<List<Product>>(products, HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/product/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Product> getProduct(@PathVariable("id") long id) {
-		Product  product = service.findById(id);
-        if (product == null) {
-            return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
-        }	
-        return new ResponseEntity<Product>(product, HttpStatus.OK);
-    }
+	public ResponseEntity<Product> getProduct(@PathVariable("id") long id) {
+		Product product = service.findById(id);
+		if (product == null) {
+			return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Product>(product, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/product-with-relation/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Product> getProductWithRelation(@PathVariable("id") long id) {
+		Product product = service.findByIdWithRelationShip(id);
+		if (product == null) {
+			return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Product>(product, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/product-find-child/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Product>> getChildProductByProductId(@PathVariable("id") long id) {
+		List<Product> childProducts = service.findChildProductByProductId(id);
+
+		if (childProducts == null) {
+			return new ResponseEntity<List<Product>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Product>>(childProducts, HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/product/", method = RequestMethod.POST)
-    public ResponseEntity<Void> save(@RequestBody Product product, UriComponentsBuilder ucBuilder) {
+	public ResponseEntity<Void> save(@RequestBody Product product, UriComponentsBuilder ucBuilder) {
 		service.save(product);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(ucBuilder.path("/product/{id}").buildAndExpand(product.getId()).toUri());
-        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
-    }
-	
-	
-    @RequestMapping(value = "/product/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Product> deleteProduct(@PathVariable("id") long id) {
-        System.out.println("Fetching & Deleting Product with id " + id);
- 
-        Product product = service.findById(id);
-        if (product == null) {
-            System.out.println("Unable to delete. Product with id " + id + " not found");
-            return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
-        }
-        service.delete(product);
-        return new ResponseEntity<Product>(HttpStatus.NO_CONTENT);
-    }
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(ucBuilder.path("/product/{id}").buildAndExpand(product.getId()).toUri());
+		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+	}
+
+	@RequestMapping(value = "/product/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Product> deleteProduct(@PathVariable("id") long id) {
+		System.out.println("Fetching & Deleting Product with id " + id);
+
+		Product product = service.findById(id);
+		if (product == null) {
+			System.out.println("Unable to delete. Product with id " + id + " not found");
+			return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
+		}
+		service.delete(product);
+		return new ResponseEntity<Product>(HttpStatus.NO_CONTENT);
+	}
 }

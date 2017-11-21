@@ -19,7 +19,7 @@ import com.avenuecode.service.ImageService;
 
 @RestController
 public class ImageController {
-	
+
 	@Autowired
 	private ImageService service;
 
@@ -31,35 +31,45 @@ public class ImageController {
 		}
 		return new ResponseEntity<List<Image>>(images, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/image/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Image> getImage(@PathVariable("id") long id) {
-		Image  image = service.findById(id);
-        if (image == null) {
-            return new ResponseEntity<Image>(HttpStatus.NOT_FOUND);
-        }	
-        return new ResponseEntity<Image>(image, HttpStatus.OK);
-    }
+	public ResponseEntity<Image> getImage(@PathVariable("id") long id) {
+		Image image = service.findById(id);
+		if (image == null) {
+			return new ResponseEntity<Image>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Image>(image, HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/image/", method = RequestMethod.PUT)
-    public ResponseEntity<Void> save(@RequestBody Image image, UriComponentsBuilder ucBuilder) {
+	public ResponseEntity<Void> save(@RequestBody Image image, UriComponentsBuilder ucBuilder) {
 		service.save(image);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(ucBuilder.path("/image/{id}").buildAndExpand(image.getId()).toUri());
-        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
-    }
-	
-    @RequestMapping(value = "/image/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Image> deleteImage(@PathVariable("id") long id) {
-        System.out.println("Fetching & Deleting Image with id " + id);
- 
-        Image image = service.findById(id);
-        if (image == null) {
-            System.out.println("Unable to delete. Image with id " + id + " not found");
-            return new ResponseEntity<Image>(HttpStatus.NOT_FOUND);
-        }
-        service.delete(image);
-        return new ResponseEntity<Image>(HttpStatus.NO_CONTENT);
-    }
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(ucBuilder.path("/image/{id}").buildAndExpand(image.getId()).toUri());
+		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+	}
+
+	@RequestMapping(value = "/image/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Image> deleteImage(@PathVariable("id") long id) {
+		System.out.println("Fetching & Deleting Image with id " + id);
+
+		Image image = service.findById(id);
+		if (image == null) {
+			System.out.println("Unable to delete. Image with id " + id + " not found");
+			return new ResponseEntity<Image>(HttpStatus.NOT_FOUND);
+		}
+		service.delete(image);
+		return new ResponseEntity<Image>(HttpStatus.NO_CONTENT);
+	}
+
+	@RequestMapping(value = "/image-by-product-id/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Image>> getImageByProductId(@PathVariable("id") long id) {
+		List<Image> images = service.findImageByProductId(id);
+
+		if (images == null) {
+			return new ResponseEntity<List<Image>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Image>>(images, HttpStatus.OK);
+	}
 
 }

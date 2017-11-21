@@ -44,7 +44,6 @@ public class Product implements Serializable {
 	private Set<Product> childProducts = new HashSet<>();
 	
 	@OneToMany(mappedBy="product", fetch=FetchType.LAZY)
-	@JsonManagedReference
 	private Set<Image> childImages = new HashSet<>();
 	
 	public Product() {

@@ -44,4 +44,8 @@ public class ImageService {
 	public void delete(Image image) {
 		this.repository.delete(image);
 	}
+	
+	public List<Image> findImageByProductId(long productId){
+		return this.repository.findImageByProductId(productId);
+	}
 }

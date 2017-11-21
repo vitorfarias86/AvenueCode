@@ -29,7 +29,13 @@ public class ProductService {
 	public List<Product> findAll(){
 		return (List<Product>) this.repository.findAll();
 	}
-	
+	/**
+	 * returns all products in database with relationship
+	 * @return Iterable<Product>
+	 */
+	public List<Product> findAllWithRelationship(){
+		return (List<Product>) this.repository.findAllProductWithChildren();
+	}
 	/**
 	 * find a product throught id
 	 * @param id
@@ -39,11 +45,25 @@ public class ProductService {
 		return this.repository.findOne(id);
 	}
 	/**
+	 * find a product throught id with relationship
+	 * @param id
+	 * @return
+	 */
+	public Product findByIdWithRelationShip(long id) {
+		return this.repository.findProductWithChildrenById(id);
+	}
+	
+	public List<Product> findChildProductByProductId(long id){
+		return this.repository.findChildProductByProductId(id);
+	}
+	/**
 	 * delete a product
 	 * @param product
 	 */
 	public void delete(Product product) {
 		this.repository.delete(product);
 	}
+	
+	
 	
 }
