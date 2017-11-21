@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,7 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "PRODUCT")
@@ -34,15 +34,17 @@ public class Product implements Serializable {
 	@Column(name = "DESCRIPTION")
 	private String description;
 	
-	@Autowired
-	@ManyToOne(cascade={CascadeType.ALL})
+	@ManyToOne
 	@JoinColumn(name = "FATHER_ID")
-	private Product product;
+	@JsonBackReference
+	private Product father;
 	
-	@OneToMany(mappedBy="product", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="father", fetch=FetchType.LAZY)
+	@JsonManagedReference
 	private Set<Product> childProducts = new HashSet<>();
 	
-	@OneToMany(mappedBy="prod", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="product", fetch=FetchType.LAZY)
+	@JsonManagedReference
 	private Set<Image> childImages = new HashSet<>();
 	
 	public Product() {
@@ -74,12 +76,12 @@ public class Product implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Product getProduct() {
-		return product;
+	public Product getFather() {
+		return father;
 	}
 
-	public void setProduct(Product product) {
-		this.product = product;	
+	public void setFather(Product father) {
+		this.father = father;	
 	}
 
 	public String getDescription() {
@@ -117,10 +119,6 @@ public class Product implements Serializable {
 			return false;
 		return true;
 	}
-	@Override
-	public String toString() {
-		return String.format("Product [id=%s, name=%s, description=%s, product=%s, childProducts=%s, childImages=%s]",
-				id, name, description, product, childProducts, childImages);
-	}
+
 	
 }

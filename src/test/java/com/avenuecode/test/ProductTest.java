@@ -43,13 +43,13 @@ public class ProductTest {
 		Product children1 = new Product();
 		children1.setName("Women Clothes");
 		children1.setDescription("Women T-Shirt");
-		children1.setProduct(product);
+		children1.setFather(product);
 		
 		productService.save(children1);
 		Product saved = productService.findById(children1.getId());
 		assertThat(saved).isNotNull();
 		assertThat(saved.getName()).isEqualTo("Women Clothes");
 		assertThat(saved.getDescription()).isEqualTo("Women T-Shirt");
-		assertThat(saved.getProduct().getChildProducts()).hasSize(1);
+		assertThat(saved.getFather().getChildProducts()).hasSize(1);
     }
 }

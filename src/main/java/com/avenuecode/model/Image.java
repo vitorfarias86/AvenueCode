@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "IMAGE")
 public class Image implements Serializable {
@@ -24,7 +26,8 @@ public class Image implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PRODUCT_ID")
-	private Product prod;
+	@JsonBackReference
+	private Product product;
 	
 	public Image() {
 	}
@@ -37,12 +40,12 @@ public class Image implements Serializable {
 		this.id = id;
 	}
 	
-	public Product getProd() {
-		return prod;
+	public Product getProduct() {
+		return product;
 	}
 
-	public void setProd(Product prod) {
-		this.prod = prod;
+	public void setProduct(Product product) {
+		this.product = product;
 	}
 
 	@Override
@@ -67,8 +70,5 @@ public class Image implements Serializable {
 		return true;
 	}
 
-	@Override
-	public String toString() {
-		return String.format("Image [id=%s, prod=%s]", id, prod);
-	}
+
 }

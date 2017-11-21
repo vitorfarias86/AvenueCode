@@ -40,14 +40,15 @@ public class ProductController {
         return new ResponseEntity<Product>(product, HttpStatus.OK);
     }
 
-	@RequestMapping(value = "/product/", method = RequestMethod.PUT)
+	@RequestMapping(value = "/product/", method = RequestMethod.POST)
     public ResponseEntity<Void> save(@RequestBody Product product, UriComponentsBuilder ucBuilder) {
 		service.save(product);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/product/{id}").buildAndExpand(product.getId()).toUri());
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
-		
+	
+	
     @RequestMapping(value = "/product/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Product> deleteProduct(@PathVariable("id") long id) {
         System.out.println("Fetching & Deleting Product with id " + id);
