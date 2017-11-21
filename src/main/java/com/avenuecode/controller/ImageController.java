@@ -41,8 +41,16 @@ public class ImageController {
 		return new ResponseEntity<Image>(image, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/image/", method = RequestMethod.PUT)
+	@RequestMapping(value = "/image/", method = RequestMethod.POST)
 	public ResponseEntity<Void> save(@RequestBody Image image, UriComponentsBuilder ucBuilder) {
+		service.save(image);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(ucBuilder.path("/image/{id}").buildAndExpand(image.getId()).toUri());
+		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(value = "/image/", method = RequestMethod.PUT)
+	public ResponseEntity<Void> update(@RequestBody Image image, UriComponentsBuilder ucBuilder) {
 		service.save(image);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(ucBuilder.path("/image/{id}").buildAndExpand(image.getId()).toUri());
