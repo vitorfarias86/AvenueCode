@@ -18,9 +18,25 @@ public class ProductService {
 	 * save a product
 	 * @param product
 	 * @return product
+	 * @throws IllegalArgumentException if a invalid father id is passed
 	 */
 	public Product save(Product product) {
-		return 	this.repository.save(product);
+		
+		// check if product is valid 
+		// yes I know I`ve to use hibernate validator... but my time is short now. :(
+		if(product == null) {
+			throw new IllegalArgumentException("product cannot be null");
+
+		}
+		// if product has father
+		if(product.getFather() != null) {	
+			// if NOT exists
+			if (! repository.exists(product.getFather().getId())) {
+				throw new IllegalArgumentException("Invalid father id");
+			}
+		}
+		
+		return this.repository.save(product);
 	}
 	/**
 	 * returns all products in database
@@ -49,7 +65,7 @@ public class ProductService {
 	 * @param id
 	 * @return
 	 */
-	public Product findByIdWithRelationShip(long id) {
+	public Product findByIdWithRelationship(long id) {
 		return this.repository.findProductWithChildrenById(id);
 	}
 	
@@ -59,11 +75,15 @@ public class ProductService {
 	/**
 	 * delete a product
 	 * @param product
+	 * @return boolean indicating if the product was deleted or not
 	 */
-	public void delete(Product product) {
-		this.repository.delete(product);
+	public boolean delete(Long id) {
+		
+		Product product = this.repository.findOne(id);
+		if (product != null) {
+			this.repository.delete(product);
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
 	}
-	
-	
-	
 }

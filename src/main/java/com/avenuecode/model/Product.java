@@ -95,7 +95,6 @@ public class Product implements Serializable {
 	public void setChildImages(Set<Image> childImages) {
 		this.childImages = childImages;
 	}
-	
 
 	@Override
 	public int hashCode() {

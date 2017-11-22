@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,15 +60,11 @@ public class ImageController {
 
 	@RequestMapping(value = "/image/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Image> deleteImage(@PathVariable("id") long id) {
-		System.out.println("Fetching & Deleting Image with id " + id);
 
-		Image image = service.findById(id);
-		if (image == null) {
-			System.out.println("Unable to delete. Image with id " + id + " not found");
-			return new ResponseEntity<Image>(HttpStatus.NOT_FOUND);
+		if(service.delete(id)) {
+			return new ResponseEntity<Image>(HttpStatus.NO_CONTENT);
 		}
-		service.delete(image);
-		return new ResponseEntity<Image>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<Image>(HttpStatus.NOT_FOUND);
 	}
 
 	@RequestMapping(value = "/image-by-product-id/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -78,6 +75,10 @@ public class ImageController {
 			return new ResponseEntity<List<Image>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Image>>(images, HttpStatus.OK);
+	}
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<String> exceptionHandler(Exception ex) {
+		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 }

@@ -3,10 +3,10 @@ package com.avenuecode.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,7 +51,7 @@ public class ProductController {
 
 	@RequestMapping(value = "/product-with-relation/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Product> getProductWithRelation(@PathVariable("id") long id) {
-		Product product = service.findByIdWithRelationShip(id);
+		Product product = service.findByIdWithRelationship(id);
 		if (product == null) {
 			return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
 		}
@@ -69,23 +69,29 @@ public class ProductController {
 	}
 
 	@RequestMapping(value = "/product/", method = RequestMethod.POST)
-	public ResponseEntity<Void> save(@RequestBody Product product, UriComponentsBuilder ucBuilder) {
-		service.save(product);
-		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/product/{id}").buildAndExpand(product.getId()).toUri());
-		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+	public ResponseEntity<Void> save(@RequestBody Product product, UriComponentsBuilder ucBuilder) throws IllegalArgumentException {
+		try {
+			service.save(product);	
+		}catch(Exception e) {
+			return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+
+		}
+		return new ResponseEntity<Void>(HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/product/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Product> deleteProduct(@PathVariable("id") long id) {
-		System.out.println("Fetching & Deleting Product with id " + id);
 
-		Product product = service.findById(id);
-		if (product == null) {
-			System.out.println("Unable to delete. Product with id " + id + " not found");
-			return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
+		//if the product was deleted...
+		if(service.delete(id)) {
+			
+			return new ResponseEntity<Product>(HttpStatus.NO_CONTENT);
 		}
-		service.delete(product);
-		return new ResponseEntity<Product>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<String> exceptionHandler(Exception ex) {
+		return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 }
